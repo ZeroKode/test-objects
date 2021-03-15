@@ -1,0 +1,10 @@
+name: John Doe
+status: ACTIVE
+memberSince: 2018
+orders:
+    -   products:
+            - name: Maple Computer
+              price: 1999.99
+              cost: 1499.49
+              id: 'MP0023'
+        totalPaid: 1999.99

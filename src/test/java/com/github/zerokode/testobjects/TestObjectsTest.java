@@ -2,9 +2,10 @@ package com.github.zerokode.testobjects;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.github.zerokode.testobjects.example.Order;
 import com.github.zerokode.testobjects.example.Product;
+import com.github.zerokode.testobjects.example.Status;
 import com.github.zerokode.testobjects.example.User;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
@@ -20,7 +21,7 @@ public class TestObjectsTest {
     @Before
     public void setup() {
         log.info("Setting up an Object Mapper used for testing. End users must provide a custom Object Mapper instance.");
-        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
         testObjects = new TestObjects(objectMapper);
     }
 
@@ -52,6 +53,23 @@ public class TestObjectsTest {
         Assert.assertEquals(2, order.getProducts().size());
         Assert.assertEquals(399.99d, order.getTotalPaid(), 0.0001);
         Assert.assertEquals(1123123123123L, order.getDate().getEpochSecond());
+    }
+
+    @Test
+    public void tesLoadUserYaml() {
+        ObjectMapper yamlObjectMapper = new ObjectMapper(new YAMLFactory());
+        yamlObjectMapper.findAndRegisterModules();
+        TestObjects testObjectsYaml = new TestObjects(yamlObjectMapper);
+
+        User user = testObjectsYaml.loadTestObject("objects/user-john.yml", User.class);
+        Assert.assertNotNull(user);
+        Assert.assertEquals("John Doe", user.getName());
+        Assert.assertEquals(2018, user.getMemberSince());
+        Assert.assertEquals(Status.ACTIVE, user.getStatus());
+        Assert.assertEquals(1, user.getOrders().size());
+        Assert.assertTrue(user.getOrders().stream().findFirst().isPresent());
+        Assert.assertTrue(user.getOrders().stream().findFirst().get().getProducts().stream().findFirst().isPresent());
+        Assert.assertEquals("Maple Computer", user.getOrders().stream().findFirst().get().getProducts().stream().findFirst().get().getName());
     }
 
 }

@@ -92,7 +92,7 @@ public class TestObjects {
      * @throws JsonProcessingException - when for some reason a JSON schema cannot be created
      */
     public void generateAndSaveJSONSchema(final Class<?> clazz) throws JsonProcessingException {
-        generateAndSaveJSONSchema(clazz, "");
+        generateAndSaveJSONSchema(clazz, "./");
     }
 
     /**
@@ -120,7 +120,7 @@ public class TestObjects {
     private String generateSchemaAsJsonString(Class<?> clazz) throws JsonProcessingException {
         JsonSchemaGenerator generator = new JsonSchemaGenerator(objectMapper);
         JsonSchema jsonSchema = generator.generateSchema(clazz);
-        return objectMapper.writeValueAsString(jsonSchema);
+        return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonSchema);
     }
 
     private void verifyModuleFolder(String moduleName) {
