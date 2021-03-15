@@ -18,22 +18,24 @@ public class TestObjectsTest {
 
     private static final Logger log = Logger.getLogger(TestObjectsTest.class);
 
-    private TestObjects testObjects;
+    private TestObjectsReader testObjectsReader;
+    private TestObjectsSchemaGenerator testObjectsSchemaGenerator;
 
     @Before
     public void setup() {
         log.info("Setting up an Object Mapper used for testing. End users must provide a custom Object Mapper instance.");
         ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
-        testObjects = new TestObjects(objectMapper);
+        testObjectsReader = new TestObjectsReader(objectMapper);
+        testObjectsSchemaGenerator = new TestObjectsSchemaGenerator(objectMapper);
     }
 
     @Test
     public void testCreateAllJsonSchemas() {
         try {
             log.info("Generating JSON Schema files");
-            testObjects.generateAndSaveJSONSchema(Product.class);
-            testObjects.generateAndSaveJSONSchema(Order.class);
-            testObjects.generateAndSaveJSONSchema(User.class);
+            testObjectsSchemaGenerator.generateAndSaveJSONSchema(Product.class);
+            testObjectsSchemaGenerator.generateAndSaveJSONSchema(Order.class);
+            testObjectsSchemaGenerator.generateAndSaveJSONSchema(User.class);
         } catch (JsonProcessingException e) {
             Assert.fail("Failed to generate JSON Schemas");
         }
@@ -41,7 +43,7 @@ public class TestObjectsTest {
 
     @Test
     public void testLoadProduct() {
-        Product laptop = testObjects.loadTestObject("objects/product-laptop.json", Product.class);
+        Product laptop = testObjectsReader.read("objects/product-laptop.json", Product.class);
         Assert.assertEquals("Bell Laptop", laptop.getName());
         Assert.assertEquals("P123", laptop.getId());
         Assert.assertEquals(1450.99D, laptop.getPrice(), 0.0001);
@@ -50,7 +52,7 @@ public class TestObjectsTest {
 
     @Test
     public void testLoadOrder() {
-        Order order = testObjects.loadTestObject("objects/order-001.json", Order.class);
+        Order order = testObjectsReader.read("objects/order-001.json", Order.class);
         Assert.assertEquals("0001", order.getId());
         Assert.assertEquals(2, order.getProducts().size());
         Assert.assertEquals(399.99d, order.getTotalPaid(), 0.0001);
@@ -61,9 +63,9 @@ public class TestObjectsTest {
     public void tesLoadUserYaml() {
         ObjectMapper yamlObjectMapper = new ObjectMapper(new YAMLFactory());
         yamlObjectMapper.findAndRegisterModules();
-        TestObjects testObjectsYaml = new TestObjects(yamlObjectMapper);
+        TestObjectsReader testObjectsReaderYaml = new TestObjectsReader(yamlObjectMapper);
 
-        User user = testObjectsYaml.loadTestObject("objects/user-john.yml", User.class);
+        User user = testObjectsReaderYaml.read("objects/user-john.yml", User.class);
         Assert.assertNotNull(user);
         Assert.assertEquals("John Doe", user.getName());
         Assert.assertEquals(2018, user.getMemberSince());
