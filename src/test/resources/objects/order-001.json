@@ -1,0 +1,19 @@
+{
+  "id": "0001",
+  "totalPaid": 399.99,
+  "products": [
+    {
+      "id": "P001",
+      "name": "piePhone",
+      "price": 299.99,
+      "cost": 130.60
+    },
+    {
+      "id": "P002",
+      "name": "Vacuum cleaner blue devil",
+      "price": 100.00,
+      "cost": 64.99
+    }
+  ],
+  "date": 1123123123123
+}
