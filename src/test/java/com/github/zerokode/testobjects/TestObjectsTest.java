@@ -12,6 +12,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Optional;
+
 public class TestObjectsTest {
 
     private static final Logger log = Logger.getLogger(TestObjectsTest.class);
@@ -67,9 +69,16 @@ public class TestObjectsTest {
         Assert.assertEquals(2018, user.getMemberSince());
         Assert.assertEquals(Status.ACTIVE, user.getStatus());
         Assert.assertEquals(1, user.getOrders().size());
-        Assert.assertTrue(user.getOrders().stream().findFirst().isPresent());
-        Assert.assertTrue(user.getOrders().stream().findFirst().get().getProducts().stream().findFirst().isPresent());
-        Assert.assertEquals("Maple Computer", user.getOrders().stream().findFirst().get().getProducts().stream().findFirst().get().getName());
+
+        Optional<Order> firstOrder = user.getOrders().stream().findFirst();
+        Assert.assertTrue(firstOrder.isPresent());
+        Assert.assertEquals(1999.99, firstOrder.get().getTotalPaid(), 0.0001);
+
+        Optional<Product> firstProductOfFirstOrder = firstOrder.get().getProducts().stream().findFirst();
+        Assert.assertTrue(firstProductOfFirstOrder.isPresent());
+
+        Assert.assertEquals("Maple Computer", firstProductOfFirstOrder.get().getName());
+        Assert.assertEquals(1999.99, firstProductOfFirstOrder.get().getPrice(), 0.0001);
     }
 
 }
